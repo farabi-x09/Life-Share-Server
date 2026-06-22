@@ -7,7 +7,7 @@ const cors = require('cors');
 app.use(cors());
 app.use(express.json());
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
@@ -35,16 +35,16 @@ async function run() {
     // Send a ping to confirm a successful connection
     const database = client.db("life_share");
     const donationCollection = database.collection("donation_requests");
-    const donationRequests=database.collection("donation_requests");
-// old = donationRequests
+    // const donationRequests=database.collection("donation_requests");
+    // old = donationRequests
 
-    app.get("/api/donation_requests",async(req,res)=>{
+    app.get("/api/donation_requests", async (req, res) => {
 
       const query = {};
-      if(req.query.requesterEmail){
+      if (req.query.requesterEmail) {
         query.requesterEmail = req.query.requesterEmail;
       }
-      if(req.query.status){
+      if (req.query.status) {
         query.status = req.query.status;
       }
 
@@ -52,6 +52,14 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     })
+
+    // Get a single donation request
+    app.get("/api/donation_requests/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await donationCollection.findOne(query);
+      res.send(result);
+    });
 
     app.post("/api/donation_requests", async (req, res) => {
       const donationRequest = req.body;
