@@ -35,8 +35,41 @@ async function run() {
     // Send a ping to confirm a successful connection
     const database = client.db("life_share");
     const donationCollection = database.collection("donation_requests");
-    // const donationRequests=database.collection("donation_requests");
-    // old = donationRequests
+    const fundsCollection = database.collection("funds");
+    // const usersCollection = database.collection("users");
+
+
+    // ফান্ডিং পেজে সব ডাটা দেখানোর জন্য GET API
+    app.get("/api/funds", async (req, res) => {
+      try {
+        // সব ফান্ডিং ডাটা নিয়ে আসা এবং সর্বশেষ ফান্ডিং আগে দেখানোর জন্য sort করা (-1)
+        const funds = await fundsCollection.find().sort({ date: -1 }).toArray();
+        res.send(funds);
+      } catch (error) {
+        console.error("Error fetching funds:", error);
+        res.status(500).send({ message: "Internal Server Error" });
+      }
+    });
+
+    app.post("/api/funds", async (req, res) => {
+      const {productId,title,price,userEmail,sessionId,
+        userId,
+        PriceId,date,userName} = req.body;
+
+      const isExist = await fundsCollection.findOne({ sessionId })
+      if(isExist){
+        return res.json({msg: "Funding already exists"})
+      }
+
+      await fundsCollection.insertOne({
+        sessionId,
+        userId,
+        PriceId,
+        title,price,userEmail,productId,date,userName
+      });
+      res.json({msg: "Funding successfully"})
+    });
+   
 
     app.get("/api/donation_requests", async (req, res) => {
 
@@ -85,6 +118,22 @@ app.patch('/api/donation_requests/:id', async (req, res) => {
     res.send(result);
   } catch (error) {
     console.error("Error updating donation:", error);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+});
+
+
+
+// রিকোয়েস্ট ডিলিট করার API
+app.delete('/api/donation_requests/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) };
+    
+    const result = await donationCollection.deleteOne(query);
+    res.send(result);
+  } catch (error) {
+    console.error("Error deleting donation:", error);
     res.status(500).send({ message: "Internal Server Error" });
   }
 });
