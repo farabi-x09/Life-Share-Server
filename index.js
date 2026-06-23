@@ -69,28 +69,6 @@ async function run() {
 
 
 
-//     app.patch('/api/donation_requests/:id', async (req, res) => {
-//   try {
-//     const id = req.params.id;
-//     const { status, donorName, donorEmail } = req.body;
-
-//     const query = { _id: new ObjectId(id) };
-//     const updateDoc = {
-//       $set: {
-//         status: status,
-//         donorName: donorName,
-//         donorEmail: donorEmail
-//       },
-//     };
-
-//     const result = await donationCollection.updateOne(query, updateDoc);
-//     res.send(result);
-//   } catch (error) {
-//     console.error("Error updating donation:", error);
-//     res.status(500).send({ message: "Internal Server Error" });
-//   }
-// });
-
 
 // রিকোয়েস্টের স্ট্যাটাস আপডেট করার API
 app.patch('/api/donation_requests/:id', async (req, res) => {
