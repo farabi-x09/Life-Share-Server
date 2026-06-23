@@ -67,6 +67,53 @@ async function run() {
       res.send(result);
     });
 
+
+
+//     app.patch('/api/donation_requests/:id', async (req, res) => {
+//   try {
+//     const id = req.params.id;
+//     const { status, donorName, donorEmail } = req.body;
+
+//     const query = { _id: new ObjectId(id) };
+//     const updateDoc = {
+//       $set: {
+//         status: status,
+//         donorName: donorName,
+//         donorEmail: donorEmail
+//       },
+//     };
+
+//     const result = await donationCollection.updateOne(query, updateDoc);
+//     res.send(result);
+//   } catch (error) {
+//     console.error("Error updating donation:", error);
+//     res.status(500).send({ message: "Internal Server Error" });
+//   }
+// });
+
+
+// রিকোয়েস্টের স্ট্যাটাস আপডেট করার API
+app.patch('/api/donation_requests/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const updateData = req.body; // 💡 ফ্রন্টএন্ড থেকে যা যা পাঠাবে, পুরোটাই এখানে রিসিভ হবে
+
+    const query = { _id: new ObjectId(id) };
+    const updateDoc = {
+      $set: updateData, // 💡 এখন শুধু পাঠানো ডাটাটাই আপডেট হবে, আগের ডাটা মুছে যাবে না!
+    };
+
+    const result = await donationCollection.updateOne(query, updateDoc);
+    res.send(result);
+  } catch (error) {
+    console.error("Error updating donation:", error);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+});
+
+
+
+
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
