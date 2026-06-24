@@ -36,7 +36,43 @@ async function run() {
     const database = client.db("life_share");
     const donationCollection = database.collection("donation_requests");
     const fundsCollection = database.collection("funds");
-    // const usersCollection = database.collection("users");
+    const usersCollection = database.collection("user");
+
+// 💡 ১. সব ইউজার পাওয়ার API
+    app.get("/api/users", async (req, res) => {
+      try {
+        const users = await usersCollection.find().toArray();
+        res.send(users);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).send({ message: "Internal Server Error" });
+      }
+    });
+
+    // 💡 ২. ইউজারের রোল (Role) বা স্ট্যাটাস আপডেট করার API
+    app.patch('/api/users/:id', async (req, res) => {
+      try {
+        const id = req.params.id;
+        const { role, status } = req.body; 
+        
+        const query = { _id: new ObjectId(id) };
+        const updateDoc = { $set: {} };
+        
+        // ফ্রন্টএন্ড থেকে যা পাঠানো হবে, শুধু সেটাই আপডেট হবে
+        if(role) updateDoc.$set.role = role;
+        if(status) updateDoc.$set.status = status;
+
+        const result = await usersCollection.updateOne(query, updateDoc);
+        res.send(result);
+      } catch (error) {
+        console.error("Error updating user:", error);
+        res.status(500).send({ message: "Internal Server Error" });
+      }
+    });
+
+
+
+
 
 
     // ফান্ডিং পেজে সব ডাটা দেখানোর জন্য GET API
