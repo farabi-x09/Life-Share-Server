@@ -89,7 +89,7 @@ async function run() {
       }
     });
 
-    // 💡 ২. ইউজারের রোল (Role) বা স্ট্যাটাস আপডেট করার API
+
     app.patch('/api/users/:id', async (req, res) => {
       try {
         const id = req.params.id;
@@ -98,7 +98,7 @@ async function run() {
         const query = { _id: new ObjectId(id) };
         const updateDoc = { $set: {} };
         
-        // ফ্রন্টএন্ড থেকে যা পাঠানো হবে, শুধু সেটাই আপডেট হবে
+   
         if(role) updateDoc.$set.role = role;
         if(status) updateDoc.$set.status = status;
 
@@ -115,10 +115,10 @@ async function run() {
 
 
 
-    // ফান্ডিং পেজে সব ডাটা দেখানোর জন্য GET API
+
     app.get("/api/funds", async (req, res) => {
       try {
-        // সব ফান্ডিং ডাটা নিয়ে আসা এবং সর্বশেষ ফান্ডিং আগে দেখানোর জন্য sort করা (-1)
+    
         const funds = await fundsCollection.find().sort({ date: -1 }).toArray();
         res.send(funds);
       } catch (error) {
@@ -179,15 +179,14 @@ async function run() {
 
 
 
-// রিকোয়েস্টের স্ট্যাটাস আপডেট করার API
 app.patch('/api/donation_requests/:id', async (req, res) => {
   try {
     const id = req.params.id;
-    const updateData = req.body; // 💡 ফ্রন্টএন্ড থেকে যা যা পাঠাবে, পুরোটাই এখানে রিসিভ হবে
+    const updateData = req.body; 
 
     const query = { _id: new ObjectId(id) };
     const updateDoc = {
-      $set: updateData, // 💡 এখন শুধু পাঠানো ডাটাটাই আপডেট হবে, আগের ডাটা মুছে যাবে না!
+      $set: updateData,
     };
 
     const result = await donationCollection.updateOne(query, updateDoc);
@@ -200,7 +199,7 @@ app.patch('/api/donation_requests/:id', async (req, res) => {
 
 
 
-// রিকোয়েস্ট ডিলিট করার API
+
 app.delete('/api/donation_requests/:id', async (req, res) => {
   try {
     const id = req.params.id;
